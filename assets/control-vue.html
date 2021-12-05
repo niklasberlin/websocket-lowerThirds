@@ -13,6 +13,8 @@
     <h1>xHain LowerThird Control</h1>
     <div id="app">
         <button v-on:click="addEntry">Add lower third</button>
+        <button v-on:click="saveEntries">Save to server</button>
+        <button v-on:click="loadEntries">Load from server</button>
         <div id="entries" class="grid">
             <div v-for="(entry, i) in entries" class="form-container">
                 <div class="entry">

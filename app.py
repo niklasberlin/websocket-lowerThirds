@@ -4,9 +4,10 @@ from pathlib import Path
 from tornado import ioloop, web, websocket
 
 ASSET_PATH = Path("./assets")
+DATA_DIR = Path("./data")
+DATA_DIR.mkdir(exist_ok=True)
 
 cl = []
-
 
 class IndexHandler(web.RequestHandler):
     def get(self):
@@ -60,12 +61,35 @@ class ApiHandler(web.RequestHandler):
     def post(self):
         pass
 
+class EntryApiHandler(web.RequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.entry_file = DATA_DIR / "entries.json"
+
+    @web.asynchronous
+    def get(self):
+        if self.entry_file.exists():
+            with open(self.entry_file, "r") as f:
+                self.write(f.read())
+        else:
+            self.write("[]")
+        self.finish()
+
+    @web.asynchronous
+    def post(self):
+        entries = json.loads(self.request.body.decode())
+        # TODO: schema validation
+        with open(self.entry_file, "w") as f:
+            json.dump(entries, f)
+        self.finish()
+
 
 app = web.Application(
     [
         (r"/", IndexHandler),
         (r"/ws", SocketHandler),
         (r"/api", ApiHandler),
+        (r"/api/entries", EntryApiHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
         (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
     ],

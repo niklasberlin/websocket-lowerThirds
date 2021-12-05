@@ -13,6 +13,12 @@ var app = new Vue({
     },
     removeEntry: function(idx) {
       this.entries.splice(idx, 1);
+    },
+    saveEntries: function() {
+      fetch('/api/entries', {method: "POST", body: JSON.stringify(this.entries)})
+    },
+    loadEntries: function() {
+      fetch('/api/entries').then((req) => req.json()).then((ent) => this.entries = ent)
     }
   }
 })
