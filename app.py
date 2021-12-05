@@ -13,11 +13,6 @@ class IndexHandler(web.RequestHandler):
         self.render(str(ASSET_PATH / "index-new.html"))
 
 
-class ControlHandler(web.RequestHandler):
-    def get(self):
-        self.render(str(ASSET_PATH / "control.html"))
-
-
 class SocketHandler(websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
@@ -37,9 +32,9 @@ class ApiHandler(web.RequestHandler):
         self.finish()
         ##id = self.get_argument("id")
         ##value = self.get_argument("value")
-        lineOne = self.get_argument("l1")
-        lineTwo = self.get_argument("l2")
-        delay = self.get_argument("d")
+        lineOne = self.get_argument("first_line")
+        lineTwo = self.get_argument("second_line")
+        delay = self.get_argument("delay")
 
         ##check for datatype and plausible values
 
@@ -72,18 +67,10 @@ app = web.Application(
         (r"/ws", SocketHandler),
         (r"/api", ApiHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(style.css)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(rest_api_example.png)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(logo.png)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/control.html", ControlHandler),
-        (r"/control", ControlHandler),
-        (r"/(control.css)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(control.js)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(jquery.js)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(PoliticsHead.otf)", web.StaticFileHandler, {"path": ASSET_PATH}),
-    ]
+        (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
+    ],
+    static_path=ASSET_PATH.resolve(),
 )
-
 if __name__ == "__main__":
     print("starting server on Port 8888")
     app.listen(8888)

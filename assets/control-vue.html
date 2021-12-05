@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Lower Third Control</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/control.css">
+    <script type="text/javascript" src="static/vue.js"></script>
+</head>
+<body>
+    <h1>xHain LowerThird Control</h1>
+    <div id="app">
+        <button v-on:click="addEntry">Add lower third</button>
+        <div id="entries" class="grid">
+            <div v-for="entry in entries" class="form-container">
+                <div class="entry">
+                    {{ entry }}
+                    <label for="l1">Line One:</label>
+                    <input type="text" v-model="entry.first_line">
+                    <label for="l2">Line Two:</label>
+                    <input type="text" v-model="entry.second_line">
+                    <label for="d">Delay: {{entry.delay}} ms</label>
+                    <input type="range" min=2000 max=20000 step=100 value="4000" v-model="entry.delay">
+                    <input type="submit" value="SHOW" v-on:click="showEntry(entry)">
+                    <input type="button" class="btn-delete" value="X" onClick="formDelete(this)">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="static/control-vue.js" async defer></script>
+</body>
+</html>
