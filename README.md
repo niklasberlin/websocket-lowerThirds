@@ -2,7 +2,7 @@
 
 # do not consider this stable!
 
-This is a websocket example for lower Thirds written in python.
+This is a websocket example for lower Thirds written in python. It is intended to be used by the xHain Hack and Makespace in Berlin during the second edition of the remote chaos experience (rc3 rev2) from the CCC in 2021.
 
 ## Installation
 
