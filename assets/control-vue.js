@@ -10,6 +10,9 @@ var app = new Vue({
     showEntry: function (entry) {
       let url_params = new URLSearchParams(entry).toString();
       fetch('/api?' + url_params)
+    },
+    removeEntry: function(idx) {
+      this.entries.splice(idx, 1);
     }
   }
 })

@@ -14,17 +14,16 @@
     <div id="app">
         <button v-on:click="addEntry">Add lower third</button>
         <div id="entries" class="grid">
-            <div v-for="entry in entries" class="form-container">
+            <div v-for="(entry, i) in entries" class="form-container">
                 <div class="entry">
-                    {{ entry }}
-                    <label for="l1">Line One:</label>
-                    <input type="text" v-model="entry.first_line">
-                    <label for="l2">Line Two:</label>
-                    <input type="text" v-model="entry.second_line">
-                    <label for="d">Delay: {{entry.delay}} ms</label>
-                    <input type="range" min=2000 max=20000 step=100 value="4000" v-model="entry.delay">
+                    <label :for="'entry-'+i+'-l1'">Line One:</label>
+                    <input type="text" :id="'entry-'+i+'-l1'" v-model="entry.first_line">
+                    <label :for="'entry-'+i+'-l2'">Line Two:</label>
+                    <input type="text" :id="'entry-'+i+'-l2'" v-model="entry.second_line">
+                    <label :for="'entry-'+i+'-d'">Delay: {{entry.delay}} ms</label>
+                    <input type="range" min=2000 max=20000 step=100 value="4000" v-model="entry.delay" :id="'entry-'+i+'-d'">
                     <input type="submit" value="SHOW" v-on:click="showEntry(entry)">
-                    <input type="button" class="btn-delete" value="X" onClick="formDelete(this)">
+                    <input type="button" class="btn-delete" value="X" v-on:click="removeEntry(i)">
                 </div>
             </div>
         </div>
