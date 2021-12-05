@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import requests
 from tornado import ioloop, web, websocket
 
 ASSET_PATH = Path("./assets")
@@ -8,6 +9,7 @@ DATA_DIR = Path("./data")
 DATA_DIR.mkdir(exist_ok=True)
 
 cl = []
+
 
 class IndexHandler(web.RequestHandler):
     def get(self):
@@ -61,6 +63,7 @@ class ApiHandler(web.RequestHandler):
     def post(self):
         pass
 
+
 class EntryApiHandler(web.RequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,12 +87,41 @@ class EntryApiHandler(web.RequestHandler):
         self.finish()
 
 
+class ScheduleApiHandler(web.RequestHandler):
+    @web.asynchronous
+    def post(self):
+        SCHEDULE_URL = (
+            "https://pretalx.c3voc.de/rc3-2021-xhain/schedule/export/schedule.json"
+        )
+        schedule = requests.get(SCHEDULE_URL).json()["schedule"]
+        entries = []
+        self.entry_file = DATA_DIR / "entries.json"
+        if self.entry_file.exists():
+            with open(self.entry_file, "r") as f:
+                entries = json.load(f)
+
+        speaker_names = {x["first_line"] for x in entries}
+        for day in schedule["conference"]["days"]:
+            for room in day["rooms"].values():
+                for talk in room:
+                    for person in talk['persons']:
+                        if person['public_name'] not in speaker_names:
+                            entries.append({"first_line": person['public_name'], "second_line": "", "delay": 5000})
+                            speaker_names.add(person['public_name']) 
+
+        with open(self.entry_file, "w") as f:
+            json.dump(entries, f)
+        self.finish()
+        
+
+
 app = web.Application(
     [
         (r"/", IndexHandler),
         (r"/ws", SocketHandler),
         (r"/api", ApiHandler),
         (r"/api/entries", EntryApiHandler),
+        (r"/api/import_schedule", ScheduleApiHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
         (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
     ],

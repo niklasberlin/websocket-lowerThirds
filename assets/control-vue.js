@@ -19,6 +19,12 @@ var app = new Vue({
     },
     loadEntries: function() {
       fetch('/api/entries').then((req) => req.json()).then((ent) => this.entries = ent)
+    },
+    importSchedule: function() {
+      fetch('/api/import_schedule', {method: "POST"})
     }
+  },
+  mounted () {
+    this.loadEntries();
   }
 })
