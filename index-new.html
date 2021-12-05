@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>tornado WebSocket example</title>
+  <link href="style.css" rel="stylesheet">
+  <script type="text/javascript" src="jquery.js"></script>
+</head>
+<body>
+    <!--<button id="button">toggle</button> -->
+    <div id="lower-third-container">
+        <div class="overflow-hidden">
+            <div class="text">
+                <div class="line-one" id="line-one">Lord Duke Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Sr.</div>
+                <div class="line-two" id="line-two">Group Info, Website, Statement, Quote or Social-Media Handle</div>
+            </div>
+        </div>
+        <img class="logo" src="logo.png"></img>
+
+    </div>
+  <script>
+    var host = window.location.host;
+    var ws = new WebSocket('ws://'+host+'/ws');
+    var $l1 = $('#line-one');
+    var $l2 = $('#line-two');
+    var $button = $('#button');
+    var visible = false;
+    var $lt = $('#lower-third-container');
+
+    function toggleVisibility(){
+        if(visible){
+            //alert("hiding lower thirds now");
+            $lt.removeClass("visible");
+            visible = !visible;
+        }else{
+            //alert("displaying lower thirds");
+            $lt.addClass("visible");
+            visible = !visible;
+        }
+
+    }
+
+    $button.click(function(){
+        toggleVisibility();
+    })
+
+    ws.onopen = function(){
+      
+    };
+    ws.onmessage = function(ev){
+      var json = JSON.parse(ev.data);
+      console.log(json.lineOne);
+      console.log(json.lineTwo);
+      console.log(json.delay);
+      $l1.text(json.lineOne);
+      $l2.text(json.lineTwo);
+      toggleVisibility();
+      setTimeout(function(){
+          toggleVisibility();
+        }, json.delay);
+    };
+    ws.onclose = function(ev){
+
+    };
+    ws.onerror = function(ev){
+
+    };
+
+  </script>
+</body>
+</html>
