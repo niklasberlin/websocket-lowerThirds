@@ -1,4 +1,6 @@
-# Tornado WebSocket example
+# Tornado WebSocket example for Lower Thirds
+
+# do not consider this stable!
 
 This is a websocket example for lower Thirds written in python.
 
