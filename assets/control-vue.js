@@ -8,7 +8,9 @@ function uuidv4() {
 var app = new Vue({
   el: '#app',
   data: {
-    entries: []
+    entries: {},
+    talks: {},
+    version: ""
   },
   methods: {
     addEntry: function () {
@@ -22,17 +24,20 @@ var app = new Vue({
     removeEntry: function(id) {
       delete this.entries[id]
     },
-    saveEntries: function() {
-      fetch('/api/lower_thirds', {method: "POST", body: JSON.stringify(this.entries)})
+    save: function() {
+      fetch('/api/storage', {method: "POST", body: JSON.stringify({"lower_thirds":this.entries, "talks":this.talks, "version": this.version})})
     },
-    loadEntries: function() {
-      fetch('/api/lower_thirds').then((req) => req.json()).then((ent) => this.entries = ent)
+    load: function() {
+      fetch('/api/storage').then((req) => req.json()).then(storage => { this.entries = storage.lower_thirds; this.talk = storage.talks; this.version = storage.version })
     },
     importSchedule: function() {
-      fetch('/api/import_schedule', {method: "POST"})
+      fetch('/api/import_schedule', {method: "POST"}).then(this.load)
+    },
+    reset: function() {
+      fetch('/api/storage', {method: "DELETE"}).then(this.load)
     }
   },
   mounted () {
-    this.loadEntries();
+    this.load();
   }
 })

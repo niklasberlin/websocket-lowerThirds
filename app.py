@@ -68,36 +68,22 @@ class ApiHandler(web.RequestHandler):
         pass
 
 
-class EntryApiHandler(web.RequestHandler):
+class StorageApiHandler(web.RequestHandler):
     @web.asynchronous
     def get(self):
         storage = data.load_data()
-        self.write(json.dumps(storage.dict()["lower_thirds"]))
+        self.write(storage.json())
         self.finish()
 
     @web.asynchronous
     def post(self):
-        storage = data.load_data()
-        storage.lower_thirds = items = parse_raw_as(
-            Mapping[str, models.LowerThirdEntry], self.request.body.decode()
-        )
+        storage = models.Storage.parse_raw(self.request.body.decode())
         data.save_data(storage)
         self.finish()
 
-class TalksApiHandler(web.RequestHandler):
     @web.asynchronous
-    def get(self):
-        storage = data.load_data()
-        self.write(json.dumps(storage.dict()["talk"]))
-        self.finish()
-
-    @web.asynchronous
-    def post(self):
-        storage = data.load_data()
-        storage.talk = items = parse_raw_as(
-            Mapping[str, models.TalkEntry], self.request.body.decode()
-        )
-        data.save_data(storage)
+    def delete(self):
+        data.reset()
         self.finish()
 
 class ScheduleApiHandler(web.RequestHandler):
@@ -108,13 +94,14 @@ class ScheduleApiHandler(web.RequestHandler):
         data.save_data(storage)
         self.finish()
 
+
+
 app = web.Application(
     [
         (r"/", IndexHandler),
         (r"/ws", SocketHandler),
         (r"/api", ApiHandler),
-        (r"/api/lower_thirds", EntryApiHandler),
-        (r"/api/talks", TalksApiHandler),
+        (r"/api/storage", StorageApiHandler),
         (r"/api/import_schedule", ScheduleApiHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
         (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
