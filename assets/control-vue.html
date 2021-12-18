@@ -17,7 +17,8 @@
         <button v-on:click="loadEntries">Load from server</button>
         <button v-on:click="importSchedule">Import schedule</button>
         <div id="entries" class="grid">
-            <div v-for="(entry, i) in entries" class="form-container">
+            <div v-for="(entry, i) in entries" class="form-container" v-bind:key="i">
+                <div class="entry__id">{{ i }}</div>
                 <div class="entry">
                     <label :for="'entry-'+i+'-l1'">Line One:</label>
                     <input type="text" :id="'entry-'+i+'-l1'" v-model="entry.first_line">

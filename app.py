@@ -1,11 +1,15 @@
 import json
 from pathlib import Path
+from typing import Mapping
 
+import data
+import models
 import requests
+from config import ASSET_PATH, DATA_DIR
+from pydantic import parse_raw_as
+from schedule_import import update_from_schedule
 from tornado import ioloop, web, websocket
 
-ASSET_PATH = Path("./assets")
-DATA_DIR = Path("./data")
 DATA_DIR.mkdir(exist_ok=True)
 
 cl = []
@@ -65,67 +69,58 @@ class ApiHandler(web.RequestHandler):
 
 
 class EntryApiHandler(web.RequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.entry_file = DATA_DIR / "entries.json"
-
     @web.asynchronous
     def get(self):
-        if self.entry_file.exists():
-            with open(self.entry_file, "r") as f:
-                self.write(f.read())
-        else:
-            self.write("[]")
+        storage = data.load_data()
+        self.write(json.dumps(storage.dict()["lower_thirds"]))
         self.finish()
 
     @web.asynchronous
     def post(self):
-        entries = json.loads(self.request.body.decode())
-        # TODO: schema validation
-        with open(self.entry_file, "w") as f:
-            json.dump(entries, f)
+        storage = data.load_data()
+        storage.lower_thirds = items = parse_raw_as(
+            Mapping[str, models.LowerThirdEntry], self.request.body.decode()
+        )
+        data.save_data(storage)
         self.finish()
 
+class TalksApiHandler(web.RequestHandler):
+    @web.asynchronous
+    def get(self):
+        storage = data.load_data()
+        self.write(json.dumps(storage.dict()["talk"]))
+        self.finish()
+
+    @web.asynchronous
+    def post(self):
+        storage = data.load_data()
+        storage.talk = items = parse_raw_as(
+            Mapping[str, models.TalkEntry], self.request.body.decode()
+        )
+        data.save_data(storage)
+        self.finish()
 
 class ScheduleApiHandler(web.RequestHandler):
     @web.asynchronous
     def post(self):
-        SCHEDULE_URL = (
-            "https://pretalx.c3voc.de/rc3-2021-xhain/schedule/export/schedule.json"
-        )
-        schedule = requests.get(SCHEDULE_URL).json()["schedule"]
-        entries = []
-        self.entry_file = DATA_DIR / "entries.json"
-        if self.entry_file.exists():
-            with open(self.entry_file, "r") as f:
-                entries = json.load(f)
-
-        speaker_names = {x["first_line"] for x in entries}
-        for day in schedule["conference"]["days"]:
-            for room in day["rooms"].values():
-                for talk in room:
-                    for person in talk['persons']:
-                        if person['public_name'] not in speaker_names:
-                            entries.append({"first_line": person['public_name'], "second_line": "", "delay": 5000})
-                            speaker_names.add(person['public_name']) 
-
-        with open(self.entry_file, "w") as f:
-            json.dump(entries, f)
+        storage = data.load_data()
+        storage = update_from_schedule(storage)
+        data.save_data(storage)
         self.finish()
-        
-
 
 app = web.Application(
     [
         (r"/", IndexHandler),
         (r"/ws", SocketHandler),
         (r"/api", ApiHandler),
-        (r"/api/entries", EntryApiHandler),
+        (r"/api/lower_thirds", EntryApiHandler),
+        (r"/api/talks", TalksApiHandler),
         (r"/api/import_schedule", ScheduleApiHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
         (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
     ],
     static_path=ASSET_PATH.resolve(),
+    autoreload=True,
 )
 if __name__ == "__main__":
     print("starting server on Port 8888")
