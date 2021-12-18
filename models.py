@@ -8,6 +8,7 @@ class LowerThirdEntry(BaseModel):
     first_line: str
     second_line: Optional[str]
     delay: int = 5000
+    always_show: bool = False
 
 
 class TalkEntry(BaseModel):
