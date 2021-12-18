@@ -8,6 +8,20 @@ function uuidv4() {
   );
 }
 
+function missingSpeakers(entries, known_ids) {
+  missing_speakers = Object.entries(entries).filter(
+    (x) => !known_ids.has(x[0])
+  );
+  missing_speakers.sort((a, b) =>
+    a[1].first_line > b[1].first_line
+      ? 1
+      : b[1].first_line > a[1].first_line
+      ? -1
+      : 0
+  );
+  return missing_speakers;
+}
+
 var app = new Vue({
   el: "#app",
   data: {
@@ -78,7 +92,7 @@ var app = new Vue({
       return Object.entries(this.entries).filter((x) => x[1].always_show);
     },
     nextTalkSpeakers: function () {
-      return this.upcomingTalks.flatMap(talk => {
+      return this.upcomingTalks.flatMap((talk) => {
         console.log(talk.lower_thirds.map((x) => this.entries[x]));
         return talk.lower_thirds.map((x) => [x, this.entries[x]]);
       });
@@ -93,7 +107,7 @@ var app = new Vue({
         speaker_ids.add(entry[0]);
         return true;
       });
-      return speakers;
+      return [...speakers, ...missingSpeakers(this.entries, speaker_ids)];
     },
   },
 });
