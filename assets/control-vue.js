@@ -22,7 +22,7 @@ var app = new Vue({
       fetch('/api?' + url_params)
     },
     removeEntry: function(id) {
-      delete this.entries[id]
+      this.$delete(this.entries, id)
     },
     save: function() {
       fetch('/api/storage', {method: "POST", body: JSON.stringify({"lower_thirds":this.entries, "talks":this.talks, "version": this.version})})
