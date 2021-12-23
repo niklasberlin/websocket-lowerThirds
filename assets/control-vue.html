@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Lower Third Control</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/control.css">
+    <script type="text/javascript" src="static/vue.js"></script>
+</head>
+<body>
+    <h1>xHain LowerThird Control</h1>
+    <div id="app">
+        <button v-on:click="addEntry">Add lower third</button>
+        <button v-on:click="save">Save to server</button>
+        <button v-on:click="load">Load from server</button>
+        <button v-on:click="importSchedule">Import schedule</button>
+        <button v-on:click="reset">Reset everything</button>
+        <div id="entries" class="grid">
+            <div v-for="[i, entry] in nextSpeakers" class="form-container" v-bind:key="i">
+                <div class="entry__id">{{ i }}</div>
+                <div class="entry">
+                    <label :for="'entry-'+i+'-l1'">Line One:</label>
+                    <input type="text" :id="'entry-'+i+'-l1'" v-model="entry.first_line">
+                    <label :for="'entry-'+i+'-l2'">Line Two:</label>
+                    <input type="text" :id="'entry-'+i+'-l2'" v-model="entry.second_line">
+                    <label :for="'entry-'+i+'-d'">Delay: {{entry.delay}} ms</label>
+                    <input type="range" min=2000 max=20000 step=100 value="4000" v-model="entry.delay" :id="'entry-'+i+'-d'">
+                    <input type="submit" value="SHOW" v-on:click="showEntry(entry)">
+                    <label :for="'entry-'+i+'-always-show'">Always show:</label>
+                    <input type="checkbox" :id="'entry-'+i+'-always-show'" v-model="entry.always_show">
+                    <input type="button" class="btn-delete" value="X" v-on:click="removeEntry(i)">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="static/control-vue.js" async defer></script>
+</body>
+</html>

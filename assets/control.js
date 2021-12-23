@@ -6,7 +6,7 @@ function addForm(){
     $form.append('<label for="l2">Line Two:</label>');
     $form.append('<input type="text" id="l2" name="l2">');
     $form.append('<label for="d">Delay: (ms, 2000 - 20000)</label>');
-    $form.append('<input type="text" id="d" name="d" value="4000">');
+    $form.append('<input type="range" id="d" name="d" min=2000 max=20000 step=100 value="4000">');
     $form.append('<input type="submit" value="SHOW">');
     $form.append('<input type="button" class="btn-delete" value="X" onClick="formDelete(this)">');
     $container.append($form);
@@ -14,7 +14,6 @@ function addForm(){
 }
 
 function save(){
-
 
 }
 
