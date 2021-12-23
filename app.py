@@ -17,7 +17,7 @@ cl = []
 
 class IndexHandler(web.RequestHandler):
     def get(self):
-        self.render(str(ASSET_PATH / "index-new.html"))
+        self.render(str(ASSET_PATH / "index-rc3.html"))
 
 
 class SocketHandler(websocket.WebSocketHandler):

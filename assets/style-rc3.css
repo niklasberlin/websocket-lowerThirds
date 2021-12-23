@@ -1,0 +1,88 @@
+@font-face {
+    font-family: 'PoliticsHead';
+    src: url("PoliticsHead.otf") format("opentype");
+}
+
+@font-face {
+    font-family: 'SpaceMono';
+    src: url("SpaceMono-Bold.ttf") format("truetype");
+}
+
+* { box-sizing: border-box; } /* Switch to border-box for box-sizing. */
+
+body {
+    margin: 0; /* Remove the tiny space around the edge of the page */
+    /*background-color: #444;*/
+    width: 1920px;
+    height: 1080px;
+    font-family: 'SpaceMono', sans-serif;
+}
+
+img, video, canvas, audio, iframe, embed, object  { 
+    display: block; /* Switch display mode to block, since that's what we usually want for images. */
+    vertical-align: middle;  /* If you override, and make an image inline, it's likely you'll want middle vertical alignment. */
+}
+
+
+
+#lower-third-container{
+    min-width: 400px;
+    max-width: 1200px;
+    bottom:100px;
+    position:absolute;
+    left: 100px;
+    color:white;
+    font-size: 30px;
+}
+
+#lower-third-container .overflow-hidden{
+    overflow: hidden;
+}
+
+#lower-third-container .text{
+    padding: 10px;
+    background-color: #666;
+    transform: translateX(-101%);
+    transform-origin: left;
+    transition: transform 1s ease 0s;
+    background-image: url(text-bg.jpg);
+
+}
+
+#lower-third-container.visible .text{
+    transform: translateX(0%);
+    transition: transform 1s ease 0.8s;
+}
+
+#lower-third-container .logo{
+    aspect-ratio: 1;
+    width: 150px;
+    background-color: #07060e;
+    /*background-image: url(logo.png);
+    background-size: contain;
+    background-repeat: no-repeat;*/
+    position: absolute;
+    left:-60px;
+    top:50%;
+    transform:translateY(-75px) scale(0);
+    transition: transform 0.75s ease 1s;
+}
+
+#lower-third-container.visible .logo{
+    transform: translateY(-75px) scale(1);
+    transition: transform 0.75s ease 0s;
+}
+
+#lower-third-container .line-one, .line-two{
+    position: relative;
+    /*background-color: darkcyan;*/
+    margin-left: 90px;
+    padding: 4px;
+    text-align: right;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#lower-third-container .line-two{
+    font-size: 0.7em;
+}
