@@ -97,16 +97,6 @@ class ApiHandler(web.RequestHandler):
     def post(self):
         pass
 
-class SocketHandler(web.RedirectHandler):
-    @web.asynchronous
-    def get(self, *args):
-        print("socket get request")
-        pass
-    
-    def post(self):
-        print("socket post request")
-        pass
-
 
 class StorageApiHandler(web.RequestHandler):
     @web.asynchronous
@@ -144,8 +134,7 @@ app = web.Application(
         (r"/api/storage", StorageApiHandler),
         (r"/api/import_schedule", ScheduleApiHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/socket.io", SocketHandler)
+        (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH})
     ],
     static_path=ASSET_PATH.resolve(),
     autoreload=True,
