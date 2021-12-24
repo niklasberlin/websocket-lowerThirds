@@ -10,9 +10,31 @@ from pydantic import parse_raw_as
 from schedule_import import update_from_schedule
 from tornado import ioloop, web, websocket
 
+from obswebsocket import obsws, events, requests
+from pythonosc import udp_client
+import time
+
 DATA_DIR.mkdir(exist_ok=True)
 
 cl = []
+
+#OBS Settings
+#host = "10.73.243.3"
+obs_host = "localhost"
+obs_port = 4444
+obs_password = "xhainavx"
+obs_txtsrc = "Bauchbinde"
+
+companion_host = "127.0.0.1"
+companion_port = 12321
+companion_on_page = 1
+companion_on_button = 12
+companion_off_page = 1
+companion_off_button = 13
+
+
+ws = obsws(obs_host, obs_port, obs_password)
+companion = udp_client.SimpleUDPClient(companion_host, companion_port)
 
 
 class IndexHandler(web.RequestHandler):
@@ -58,13 +80,31 @@ class ApiHandler(web.RequestHandler):
         if not isinstance(lineTwo, str):
             lineTwo = ""
 
+        ws.call(requests.SetTextFreetype2Properties(obs_txtsrc,text=lineOne))
+        osc_adress = "/press/bank/"+str(companion_on_page)+"/"+str(companion_on_button)
+        print("calling companion at address:", osc_adress)
+        companion.send_message(osc_adress, "")
+
         data = {"lineOne": lineOne, "lineTwo": lineTwo, "delay": delay}
         data = json.dumps(data)
         for c in cl:
             c.write_message(data)
+        time.sleep(delay/1000)
+        osc_adress = "/press/bank/"+str(companion_off_page)+"/"+str(companion_off_button)
+        companion.send_message(osc_adress, "")
 
     @web.asynchronous
     def post(self):
+        pass
+
+class SocketHandler(web.RedirectHandler):
+    @web.asynchronous
+    def get(self, *args):
+        print("socket get request")
+        pass
+    
+    def post(self):
+        print("socket post request")
         pass
 
 
@@ -94,7 +134,7 @@ class ScheduleApiHandler(web.RequestHandler):
         data.save_data(storage)
         self.finish()
 
-
+ws.connect()
 
 app = web.Application(
     [
@@ -105,6 +145,7 @@ app = web.Application(
         (r"/api/import_schedule", ScheduleApiHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
         (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
+        (r"/socket.io", SocketHandler)
     ],
     static_path=ASSET_PATH.resolve(),
     autoreload=True,
@@ -113,3 +154,4 @@ if __name__ == "__main__":
     print("starting server on Port 8888")
     app.listen(8888)
     ioloop.IOLoop.instance().start()
+
