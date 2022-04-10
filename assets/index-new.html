@@ -25,6 +25,8 @@
     var $button = $('#button');
     var visible = false;
     var $lt = $('#lower-third-container');
+    const urlParams = new URLSearchParams(window.location.search);
+    var mySrc = urlParams.get('src'); 
 
     function toggleVisibility(){
         if(visible){
@@ -44,7 +46,6 @@
     })
 
     ws.onopen = function(){
-      
     };
     ws.onmessage = function(ev){
       var json = JSON.parse(ev.data);
@@ -53,10 +54,16 @@
       console.log(json.delay);
       $l1.text(json.lineOne);
       $l2.text(json.lineTwo);
-      toggleVisibility();
-      setTimeout(function(){
+      var visible_srcs = json.visible_srcs;
+      console.log("visible_srcs: "+visible_srcs);
+      console.log("mySrc: "+mySrc);
+      if(visible_srcs.includes(mySrc)){
+          console.log("mySrc is in visible srcs")
           toggleVisibility();
-        }, json.delay);
+          setTimeout(function(){
+              toggleVisibility();
+            }, json.delay);
+        };
     };
     ws.onclose = function(ev){
 

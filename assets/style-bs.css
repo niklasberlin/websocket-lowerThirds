@@ -1,0 +1,116 @@
+@font-face {
+    font-family: PoliticsHead;
+    src: url("PoliticsHead.otf") format("opentype");
+}
+
+
+* { box-sizing: border-box; } /* Switch to border-box for box-sizing. */
+
+body {
+    margin: 0; /* Remove the tiny space around the edge of the page */
+    /*background-color: #444;*/
+    padding: 10px;
+    margin: 0px auto;
+    font-family: 'PoliticsHead', sans-serif;
+
+}
+
+img, video, canvas, audio, iframe, embed, object  { 
+    display: block; /* Switch display mode to block, since that's what we usually want for images. */
+    vertical-align: middle;  /* If you override, and make an image inline, it's likely you'll want middle vertical alignment. */
+}
+
+.grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 10px;
+    margin-top:1rem;
+}
+
+.center-button{
+    text-align: center;
+}
+
+button{
+    padding: 20px 70px;
+    /*background-color: rgb(105, 170, 255);*/
+    margin: 5px 5px;
+}
+
+.btn-load{
+    background-color:rgb(121, 189, 121);
+}
+
+.btn-save{
+    background-color:rgb(223, 217, 132);
+}
+
+.btn-delete{
+    /*background-color:rgb(179, 0, 0);*/
+    position: absolute;
+    top: -25px;
+    right: 0px;
+}
+
+.form-container{
+    min-width: 340px;
+    /*background-color: white;*/
+    margin: 2px;
+    padding: 10px 20px;
+}
+
+h1{
+    text-align: center;
+    color: white;
+}
+
+label{
+    display: block;
+}
+
+form, .entry {
+    position: relative;
+}
+
+.text-input{
+    width:100%;
+}
+
+.slider-input{
+    width:70%;
+}
+
+input[type=submit]{
+    position: absolute;
+    right: 0px;
+    bottom: 0%;
+    padding: 25px;
+    /*transform: translateY(-50%);*/
+    /*background-color:rgb(121, 189, 121);*/
+}
+
+
+@media only screen and (min-width: 750px) {
+    body{
+        padding: 10px 60px;
+    }
+    .grid{
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .form-container{
+        min-width: 360px;
+     }
+}
+
+  @media only screen and (min-width: 1200px) {
+    .grid{
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  @media only screen and (min-width: 1560px) {
+    .grid{
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }

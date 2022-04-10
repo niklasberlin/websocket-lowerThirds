@@ -32,14 +32,18 @@ companion_on_button = 12
 companion_off_page = 1
 companion_off_button = 13
 
-
-ws = obsws(obs_host, obs_port, obs_password)
-companion = udp_client.SimpleUDPClient(companion_host, companion_port)
+visible_srcs = ["src1","src2","src3","src4","src5","src6"]
+#ws = obsws(obs_host, obs_port, obs_password)
+#companion = udp_client.SimpleUDPClient(companion_host, companion_port)
 
 
 class IndexHandler(web.RequestHandler):
-    def get(self):
-        self.render(str(ASSET_PATH / "index-rc3.html"))
+    def get(self, *args):
+        self.render(str(ASSET_PATH / "index-new.html"))
+
+class ControlHandler(web.RequestHandler):
+    def get(self, *args):
+        self.render(str(ASSET_PATH / "control-vue.html"))
 
 
 class SocketHandler(websocket.WebSocketHandler):
@@ -80,18 +84,18 @@ class ApiHandler(web.RequestHandler):
         if not isinstance(lineTwo, str):
             lineTwo = ""
 
-        ws.call(requests.SetTextFreetype2Properties(obs_txtsrc,text=lineOne))
-        osc_adress = "/press/bank/"+str(companion_on_page)+"/"+str(companion_on_button)
-        print("calling companion at address:", osc_adress)
-        companion.send_message(osc_adress, "")
+        #ws.call(requests.SetTextFreetype2Properties(obs_txtsrc,text=lineOne))
+        #osc_adress = "/press/bank/"+str(companion_on_page)+"/"+str(companion_on_button)
+        #print("calling companion at address:", osc_adress)
+        #companion.send_message(osc_adress, "")
 
-        data = {"lineOne": lineOne, "lineTwo": lineTwo, "delay": delay}
+        data = {"lineOne": lineOne, "lineTwo": lineTwo, "delay": delay, "visible_srcs": visible_srcs}
         data = json.dumps(data)
         for c in cl:
             c.write_message(data)
         time.sleep(delay/1000)
-        osc_adress = "/press/bank/"+str(companion_off_page)+"/"+str(companion_off_button)
-        companion.send_message(osc_adress, "")
+        #osc_adress = "/press/bank/"+str(companion_off_page)+"/"+str(companion_off_button)
+        #companion.send_message(osc_adress, "")
 
     @web.asynchronous
     def post(self):
@@ -124,7 +128,7 @@ class ScheduleApiHandler(web.RequestHandler):
         data.save_data(storage)
         self.finish()
 
-ws.connect()
+#ws.connect()
 
 app = web.Application(
     [
@@ -133,8 +137,10 @@ app = web.Application(
         (r"/api", ApiHandler),
         (r"/api/storage", StorageApiHandler),
         (r"/api/import_schedule", ScheduleApiHandler),
+        (r"/control", ControlHandler),
         (r"/(favicon.ico)", web.StaticFileHandler, {"path": ASSET_PATH}),
-        (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH})
+        (r"/(control-vue.html)", web.StaticFileHandler, {"path": ASSET_PATH}),
+        (r"/(control-bs.html)", web.StaticFileHandler, {"path": ASSET_PATH})
     ],
     static_path=ASSET_PATH.resolve(),
     autoreload=True,

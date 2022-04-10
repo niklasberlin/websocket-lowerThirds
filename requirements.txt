@@ -1,5 +1,5 @@
 tornado==4.0.2
 requests
 pydantic
-pythonosc
-obswebsocket
+python-osc
+obs-websocket-py
